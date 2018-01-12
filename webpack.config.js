@@ -1,5 +1,6 @@
-var path = require('path');
-var webpack = require('webpack');
+const path = require('path');
+const webpack = require('webpack');
+const autoPrefixer = require('autoprefixer');
 
 module.exports = {
   devtool: 'cheap-module-source-map',
@@ -14,34 +15,55 @@ module.exports = {
     publicPath: '/static/'
   },
   plugins: [
-    new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
   ],
   module: {
-    loaders: [{
-      test: /\.jsx?$/,
-      loaders: ['babel'],
-      include: path.join(__dirname, 'src')
-    }, {
-      test: /\.json$/,
-      loader: 'json'
-    }, {
-      test: /\.css$/, // Only .css files
-      loader: 'style!css' // Run both loaders
-    }, {
-      test: /\.less/,
-      loaders: ["style", "css?sourceMap", "less?sourceMap"]
-    }, {
-      test: /\.woff$/,
-      loader: 'url?limit=100000'
-    }, {
-      test: /\.(png|jpg)$/,
-      loader: 'url?limit=25000'
-    }, {
-      test: /\.(svg|ttf)$/,
-      loader: 'url?limit=100000'
-    }
+    rules: [
+      {
+        test: /\.css$/,
+        use: ['style-loader', {
+          loader: 'postcss-loader', options: {
+            plugins: [autoPrefixer]
+          }
+        }]
+      }, {
+        test: /\.less$/,
+        use: [
+          'style-loader',
+          {
+            loader: 'postcss-loader', options: {
+              plugins: [autoPrefixer]
+            }
+          }, {
+            loader: 'less-loader'
+          }
+        ]
+      },
+      {
+        test: /\.jsx?$/,
+        use: ['babel-loader']
+      }, {
+        test: /\.(jpg|png|gif)$/,
+        use: {
+          loader: 'url-loader',
+          options: {
+            limit: 25000,
+            name: '[name]_[hash:8].[ext]'
+          }
+        }
+
+      }, {
+        test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
+        use: {
+          loader: 'url-loader',
+          options: {
+            limit: 25000,
+            mimetype: 'application/font-woff',
+            name: '[name]_[hash:8].[ext]'
+          }
+        }
+      }
     ]
   }
 };

@@ -38,11 +38,6 @@ module.exports = {
     }
   },
   module: {
-    postLoaders: [{
-      test: /\.js$/,
-      loader: "webpack-strip?strip[]=console.log",
-      include: path.join(__dirname, 'src')
-    }],
     loaders: [{
       test: /\.js$/,
       loaders: ['babel'],
