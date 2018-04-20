@@ -1,15 +1,15 @@
 /**
  * Created by 7wingsfish on 2016/4/25.
  */
-var path = require('path');
-var webpack = require('webpack');
-var ROOT_PATH = path.resolve(__dirname);
-var APP_PATH = path.resolve(ROOT_PATH, 'src');
-var HtmlwebpackPlugin = require('html-webpack-plugin');
-var ExtractTextPlugin = require("extract-text-webpack-plugin");
+const path = require('path');
+const webpack = require('webpack');
+const ROOT_PATH = path.resolve(__dirname);
+const APP_PATH = path.resolve(ROOT_PATH, 'src');
+const HtmlwebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
-  devtool: 'source-map',
+  mode: 'production',
   entry: {
     app: path.resolve(APP_PATH, 'index.js'),
   },
@@ -38,28 +38,50 @@ module.exports = {
     }
   },
   module: {
-    loaders: [{
-      test: /\.js$/,
-      loaders: ['babel'],
-      include: path.join(__dirname, 'src')
+    rules: [{
+      test: /\.css$/,
+      use: ['style-loader', {
+        loader: 'postcss-loader', options: {
+          plugins: [autoPrefixer]
+        }
+      }]
     }, {
-      test: /\.json$/,
-      loader: 'json'
-    }, {
-      test: /\.css$/, // Only .css files
-      loader: 'style!css' // Run both loaders
-    }, {
-      test: /\.less/,
-      loader: ExtractTextPlugin.extract("style-loader", "css-loader!less-loader")
-    }, {
-      test: /\.woff$/,
-      loader: 'url?limit=100000'
-    }, {
-      test: /\.(png|jpg)$/,
-      loader: 'url?limit=25000'
-    }, {
-      test: /\.(svg|ttf)$/,
-      loader: 'url?limit=100000'
-    }]
+      test: /\.less$/,
+      use: [
+        'style-loader',
+        {
+          loader: 'postcss-loader', options: {
+            plugins: [autoPrefixer]
+          }
+        }, {
+          loader: 'less-loader'
+        }
+      ]
+    },
+      {
+        test: /\.jsx?$/,
+        use: ['babel-loader']
+      }, {
+        test: /\.(jpg|png|gif)$/,
+        use: {
+          loader: 'url-loader',
+          options: {
+            limit: 25000,
+            name: '[name]_[hash:8].[ext]'
+          }
+        }
+
+      }, {
+        test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
+        use: {
+          loader: 'url-loader',
+          options: {
+            limit: 25000,
+            mimetype: 'application/font-woff',
+            name: '[name]_[hash:8].[ext]'
+          }
+        }
+      }
+    ]
   }
 };

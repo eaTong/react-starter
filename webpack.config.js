@@ -4,6 +4,7 @@ const autoPrefixer = require('autoprefixer');
 
 module.exports = {
   devtool: 'cheap-module-source-map',
+  mode:'development',
   entry: [
     'react-hot-loader/patch',
     'webpack-hot-middleware/client',
