@@ -11,7 +11,7 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin");
 module.exports = {
   mode: 'production',
   entry: {
-    app: path.resolve(APP_PATH, 'index.js'),
+    app: ['babel-polyfill', path.resolve(APP_PATH, 'index.js')],
   },
   output: {
     path: path.resolve(ROOT_PATH, 'dist'),
@@ -54,7 +54,8 @@ module.exports = {
             plugins: [autoPrefixer]
           }
         }, {
-          loader: 'less-loader'
+          loader: 'less-loader',
+          options: {javascriptEnabled: true}
         }
       ]
     },

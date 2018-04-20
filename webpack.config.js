@@ -6,6 +6,7 @@ module.exports = {
   devtool: 'cheap-module-source-map',
   mode:'development',
   entry: [
+    'babel-polyfill',
     'react-hot-loader/patch',
     'webpack-hot-middleware/client',
     './src/index'
@@ -37,7 +38,8 @@ module.exports = {
               plugins: [autoPrefixer]
             }
           }, {
-            loader: 'less-loader'
+            loader: 'less-loader',
+            options: {javascriptEnabled: true}
           }
         ]
       },

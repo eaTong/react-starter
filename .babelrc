@@ -7,10 +7,29 @@
   "env": {
     "development": {
       "plugins": [
-        "react-hot-loader/babel"
+
+        "react-hot-loader/babel",
+        "syntax-async-functions",
+        [
+          "import",
+          {
+            "libraryName": "antd",
+            "style":true
+          }
+        ]
       ]
     },
     "production": {
+      "plugins": [
+        "syntax-async-functions",
+        [
+          "import",
+          {
+            "libraryName": "antd",
+            "style":true
+          }
+        ]
+      ]
     }
   }
 }
