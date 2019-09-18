@@ -1,16 +1,43 @@
 {
   "presets": [
-    "es2015",
-    "stage-0",
-    "react"
+    "@babel/preset-env",
+    "@babel/preset-react"
   ],
   "env": {
     "development": {
       "plugins": [
-        "react-hot-loader/babel"
+        "react-hot-loader/babel",
+        "@babel/syntax-dynamic-import",
+        [
+          "@babel/plugin-proposal-decorators",
+          {
+            "legacy": true
+          }
+        ],
+        [
+          "@babel/plugin-proposal-class-properties",
+          {
+            "loose": true
+          }
+        ]
       ]
     },
     "production": {
+      "plugins": [
+        "@babel/syntax-dynamic-import",
+        [
+          "@babel/plugin-proposal-decorators",
+          {
+            "legacy": true
+          }
+        ],
+        [
+          "@babel/plugin-proposal-class-properties",
+          {
+            "loose": true
+          }
+        ]
+      ]
     }
   }
 }

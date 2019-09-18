@@ -1,73 +1,139 @@
-/**
- * Created by 7wingsfish on 2016/4/25.
- */
 const path = require('path');
 const webpack = require('webpack');
-const ROOT_PATH = path.resolve(__dirname);
-const APP_PATH = path.resolve(ROOT_PATH, 'src');
-const HtmlwebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const autoPrefixer = require('autoprefixer');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const AppCachePlugin = require('appcache-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+
+const buildPath = path.resolve(__dirname, 'dist/application');
+const webContextRoot = '/static/application/';// 应用的实际访问路径，默认是'/'   可以试试/static/
+
+const mainColor = '#33ab9a';
 
 module.exports = {
+  devtool: 'cheap-module',
   mode: 'production',
   entry: {
-    app: path.resolve(APP_PATH, 'index.js'),
+    main: [
+      '@babel/polyfill',
+      './src/index.prod.js'
+    ],
+    vendor: ['react', 'react-dom', 'react-router-dom']
   },
   output: {
-    path: path.resolve(ROOT_PATH, 'dist'),
-    filename: 'bundle.js',
-    publicPath: '/static/'
+    path: buildPath,
+    filename: 'js/[name]_[chunkhash:8].js',
+    publicPath: webContextRoot
   },
-  plugins: [
-    //这个使用uglifyJs压缩你的js代码
-    new webpack.optimize.UglifyJsPlugin({minimize: true}),
-    //把入口文件里面的数组打包成verdors.js
-    new HtmlwebpackPlugin({
-      template: path.resolve(ROOT_PATH, 'index-production.html'),
-      filename: 'index.html',
-      //要把script插入到标签里
-      inject: false,
-    }),
-    new ExtractTextPlugin("style.css")
-  ],
-
   resolve: {
+    extensions: ['.js', '.jsx', '.json'],
     alias: {
-      'react$': path.resolve(__dirname, './node_modules/react/dist/react.min.js'),
-      'react-dom$': path.resolve(__dirname, './node_modules/react-dom/dist/react-dom.min.js')
+      '~': path.resolve('src'),
+      'ajax': path.resolve('src/framework/ajaxUtil'),
+      'framework': path.resolve('src/framework'),
+      'components': path.resolve('src/components'),
+      'images': path.resolve('src/images'),
     }
   },
-  module: {
-    rules: [{
-      test: /\.css$/,
-      use: ['style-loader', {
-        loader: 'postcss-loader', options: {
-          plugins: [autoPrefixer]
-        }
-      }]
-    }, {
-      test: /\.less$/,
-      use: [
-        'style-loader',
-        {
-          loader: 'postcss-loader', options: {
-            plugins: [autoPrefixer]
-          }
-        }, {
-          loader: 'less-loader'
-        }
-      ]
+  optimization: {
+    splitChunks: {
+      name: entrypoint => `vendor.${entrypoint.name}`
     },
+    minimizer: [
+      new TerserPlugin({
+        parallel: true,
+        cache: false,
+        terserOptions: {
+          ecma: 3,
+          safari10: true,
+          ie8: true,
+        },
+      }),
+      new OptimizeCSSAssetsPlugin({})
+    ]
+  },
+  plugins: [
+    new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en-ca|zh-cn/),
+    new webpack.optimize.OccurrenceOrderPlugin(true),
+    new AppCachePlugin({
+      exclude: ["index.html"],
+      output: '/manifest.appcache'
+    }),
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, 'index-production.html'),
+      path: buildPath,
+      filename: 'index.html',
+      minify: {
+        collapseWhitespace: true,
+        collapseInlineTagWhitespace: true,
+        removeComments: true,
+        removeRedundantAttributes: true
+      },
+    }),
+    new webpack.DefinePlugin({
+      process: {
+        env: {
+          // process.env.NODE_ENV==="production"
+          // 应用代码里，可凭此判断是否运行在生产环境
+          NODE_ENV: JSON.stringify('production')
+        }
+      }
+    }),
+    new webpack.HashedModuleIdsPlugin(),
+    new MiniCssExtractPlugin({
+      filename: '[name]-[hash].css',
+      chunkFilename: '[id].css',
+      ignoreOrder: false, // Enable to remove warnings about conflicting order
+    }),
+  ],
+  module: {
+    rules: [
       {
         test: /\.jsx?$/,
+        exclude: /(node_modules)/,
         use: ['babel-loader']
+      }, {
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+          }, {
+            loader: 'postcss-loader',
+            options: {
+              ident: 'postcss',
+              plugins: [autoPrefixer]
+            }
+          }]
+      }, {
+        test: /\.less$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              ident: 'postcss',
+              plugins: [autoPrefixer]
+            }
+          }, {
+            loader: 'less-loader',
+            options: {
+              javascriptEnabled: true
+            }
+          }
+        ]
       }, {
         test: /\.(jpg|png|gif)$/,
         use: {
           loader: 'url-loader',
           options: {
             limit: 25000,
-            name: '[name]_[hash:8].[ext]'
+            name: '[name].[ext]'
           }
         }
 
