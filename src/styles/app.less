@@ -2,8 +2,26 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  color: red;
+
 }
-.home-page{
+
+.example-line {
   display: flex;
+  padding: 10px;
+  .label {
+    width: 10em;
+  }
+  .display {
+    flex: 1;
+    &.main {
+      color: #456789;
+    }
+    &.border {
+      border: 1px solid #345678;
+    }
+    &.background {
+      background-color: rgba(0, 0, 0, 0.15);
+      color: #fff;
+    }
+  }
 }

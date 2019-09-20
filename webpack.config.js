@@ -2,13 +2,14 @@ const path = require('path');
 const webpack = require('webpack');
 const autoPrefixer = require('autoprefixer');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const WebpackColorReplacer = require('./webpack-color-replacer');
 
-const mainColor = '#33ab9a';
 const buildPath = path.resolve(__dirname, 'dist/application');
 
 module.exports = {
   devtool: 'cheap-module-source-map',
-  mode:'development',
+  mode: 'development',
   entry: [
     '@babel/polyfill',
     'react-hot-loader/patch',
@@ -24,10 +25,6 @@ module.exports = {
     extensions: ['.js', '.jsx', '.json'],
     alias: {
       '~': path.resolve('src'),
-      'ajax': path.resolve('src/framework/ajaxUtil'),
-      'framework': path.resolve('src/framework'),
-      'components': path.resolve('src/components'),
-      'images': path.resolve('src/images'),
     }
   },
   plugins: [
@@ -50,51 +47,49 @@ module.exports = {
         removeComments: true,
         removeRedundantAttributes: true
       }
+    }),
+    new MiniCssExtractPlugin({
+      filename: 'app.css',
+      chunkFilename: '[id].css',
+      ignoreOrder: false, // Enable to remove warnings about conflicting order
+    }),
+    new WebpackColorReplacer({
+      matchVariables: {main: '#456789', border: '1px solid #345678', background: 'rgba(0, 0, 0, 0.15)'}
     })
   ],
   module: {
-    unknownContextCritical : false,
+    unknownContextCritical: false,
     rules: [
       {
         test: /\.css$/,
         use: [
-          'style-loader',
+          MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
-            options: {
-              sourceMap: true,
-              modules: false
-            }
           }, {
             loader: 'postcss-loader',
             options: {
-              sourceMap: true,
+              ident: 'postcss',
               plugins: [autoPrefixer]
             }
           }]
       }, {
         test: /\.less$/,
         use: [
-          'style-loader',
+          MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
-            options: {
-              sourceMap: true,
-              modules: false
-            }
           },
           {
             loader: 'postcss-loader',
             options: {
-              sourceMap: true,
+              ident: 'postcss',
               plugins: [autoPrefixer]
             }
           }, {
             loader: 'less-loader',
             options: {
-              sourceMap: true,
-              modules: false,
-              javascriptEnabled: true,
+              javascriptEnabled: true
             }
           }
         ]

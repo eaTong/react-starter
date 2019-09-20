@@ -6,11 +6,10 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const AppCachePlugin = require('appcache-webpack-plugin');
 const TerserPlugin = require("terser-webpack-plugin");
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const VariableReplacerPlugin = require('webpack-variable-replacer-plugin');
 
 const buildPath = path.resolve(__dirname, 'dist/application');
-const webContextRoot = '/static/application/';// 应用的实际访问路径，默认是'/'   可以试试/static/
-
-const mainColor = '#33ab9a';
+const webContextRoot = '';
 
 module.exports = {
   devtool: 'cheap-module',
@@ -75,8 +74,6 @@ module.exports = {
     new webpack.DefinePlugin({
       process: {
         env: {
-          // process.env.NODE_ENV==="production"
-          // 应用代码里，可凭此判断是否运行在生产环境
           NODE_ENV: JSON.stringify('production')
         }
       }
@@ -85,8 +82,9 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: '[name]-[hash].css',
       chunkFilename: '[id].css',
-      ignoreOrder: false, // Enable to remove warnings about conflicting order
+      ignoreOrder: false,
     }),
+    new VariableReplacerPlugin({matchVariables: {main: '#456789'}})
   ],
   module: {
     rules: [
