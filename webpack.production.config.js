@@ -8,7 +8,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const VariableReplacerPlugin = require('webpack-variable-replacer-plugin');
 
-const buildPath = path.resolve(__dirname, 'dist/application');
+const buildPath = path.resolve(__dirname, 'dist');
 const webContextRoot = '';
 
 module.exports = {
@@ -17,23 +17,19 @@ module.exports = {
   entry: {
     main: [
       '@babel/polyfill',
-      './src/index.prod.js'
+      './src/index.js'
     ],
     vendor: ['react', 'react-dom', 'react-router-dom']
   },
   output: {
     path: buildPath,
-    filename: 'js/[name]_[chunkhash:8].js',
+    filename: '[name]_[chunkhash:8].js',
     publicPath: webContextRoot
   },
   resolve: {
     extensions: ['.js', '.jsx', '.json'],
     alias: {
-      '~': path.resolve('src'),
-      'ajax': path.resolve('src/framework/ajaxUtil'),
-      'framework': path.resolve('src/framework'),
-      'components': path.resolve('src/components'),
-      'images': path.resolve('src/images'),
+      '~': path.resolve('src')
     }
   },
   optimization: {
@@ -84,7 +80,13 @@ module.exports = {
       chunkFilename: '[id].css',
       ignoreOrder: false,
     }),
-    new VariableReplacerPlugin({matchVariables: {main: '#456789'}})
+    new VariableReplacerPlugin({
+      matchVariables: {
+        main: '#456789',
+        border: '1px solid #345678',
+        background: 'rgba(0, 0, 0, 0.15)'
+      }
+    })
   ],
   module: {
     rules: [
