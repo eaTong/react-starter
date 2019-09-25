@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const autoPrefixer = require('autoprefixer');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const WebpackColorReplacer = require('./webpack-color-replacer');
+const VariableReplacerPlugin = require('webpack-variable-replacer-plugin');
 
 const buildPath = path.resolve(__dirname, 'dist/application');
 
@@ -53,7 +53,7 @@ module.exports = {
       chunkFilename: '[id].css',
       ignoreOrder: false, // Enable to remove warnings about conflicting order
     }),
-    new WebpackColorReplacer({
+    new VariableReplacerPlugin({
       matchVariables: {main: '#456789', border: '1px solid #345678', background: 'rgba(0, 0, 0, 0.15)'}
     })
   ],

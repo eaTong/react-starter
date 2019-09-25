@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Boilerplate for ReactJS project with hot code reloading",
   "scripts": {
-    "start": "cross-env node server.js",
+    "start": "node $NODE_DEBUG_OPTION server.js",
     "dist": "cross-env NODE_ENV=production webpack --progress --profile --colors --config webpack.production.config.js "
   },
   "repository": {
